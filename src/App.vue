@@ -138,11 +138,13 @@ export default {
         },
 
         eta_period_display_map: {
+            'denomination': 'denominationUsuelleEtablissement',
             'fin': 'dateFin',
             'début': 'dateDebut',
         },
 
         ul_period_display_map: {
+            'denomination': 'denominationUniteLegale',
             'nom propriétaire': 'nomUniteLegale',
             'siege': 'nicSiegeUniteLegale',
             'fin': 'dateFin',
@@ -155,6 +157,7 @@ export default {
     }),
     methods: {
         get_naf(naf) {
+            if (!naf) return 'Code non indiqué'
             if (!this.nafs[naf]) {
                 this.$set(this.nafs, naf, 'loading ...')
                 this.$api.naf(naf).then(nafd => this.$set(this.nafs, naf, nafd.intitule))
@@ -174,7 +177,7 @@ export default {
                 const insee_data = await this.$api[type](code)
                 if (insee_data.header.statut != 200) this.error = insee_data.header.message
                 else this.$set(this, 'data', { type, code, insee_data })
-
+                location.hash = code
             } catch (e) {
                 this.error = e.stack.replace(/\n/g, '<br/>')
             }
@@ -191,6 +194,11 @@ export default {
         }
     },
     mounted() {
+        const hash = location.hash.replace('#', '')
+        if (hash) {
+            this.code = hash
+            this.check()
+        }
     }
 };
 </script>

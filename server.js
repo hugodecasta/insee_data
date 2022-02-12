@@ -30,15 +30,21 @@ function insee_siren(sirene) {
     return insee_api('entreprises/sirene/V3', 'siren', sirene)
 }
 
-function insee_naf(naf) {
-    return insee_api('metadonnees/V1/codes', 'nafr2/sousClasse', naf)
+const stored_nafs = {}
+async function insee_naf(naf) {
+    if (naf in stored_nafs) return stored_nafs[naf]
+    try {
+        return stored_nafs[naf] = await insee_api('metadonnees/V1/codes', 'nafr2/sousClasse', naf)
+    } catch (e) {
+        return stored_nafs[naf] = { intitule: 'code non trouvé !' }
+    }
 }
 
 async function exec_func(res, func) {
     try {
         await func()
     } catch (e) {
-        res.status(e.status).send(await e.text())
+        res.status(e.status).send(await e.text?.())
     }
 }
 
