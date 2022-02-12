@@ -1,5 +1,13 @@
+const server = require('./server')
+
 module.exports = {
-  transpileDependencies: [
-    'vuetify'
-  ]
+
+    devServer: {
+        port: process.env.PORT ?? 3000,
+        before: server
+    },
+
+    transpileDependencies: [
+        'vuetify'
+    ]
 }
